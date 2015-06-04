@@ -4,32 +4,46 @@ function Player(name, score) {
   this.pigNames = [];
 }
 
-function Die(numSides) {
-  this.numSides = numSides;
+function Die(weights) {
+  if (typeof weights === 'undefined') {
+    weights = [.2, .2, .2, .2, .2];
+  }
+  this.numSides = weights.length;
+  this.weights = weights;
 }
 
 Die.prototype.roll = function() {
-  return Math.floor((Math.random() * this.numSides) + 1);
+  var rand = Math.random();
+  var i = 0;
+  var weightSum = 0;
+  while (i < this.numSides) {
+    weightSum += this.weights[i]
+    if (rand < weightSum) {
+      return i + 1;
+    }
+    i++;
+  }
+
 }
 
 Player.prototype.calculateScore = function(roll1, roll2) {
   var tempScore;
   var pigSides = {
-    1: 0, // lying on side
-    2: 5, //razorback
-    3: 5, //trotter
-    4: 10, //snouter
-    5: 15, //leaning jowler
+    1: [0, "lying on side"],
+    2: [5, "razorback"],
+    3: [5, "trotter"],
+    4: [10, "snouter"],
+    5: [15, "leaning jowler"]
   };
 
   if (roll1 === roll2) {
     if (roll1 === 1) {
       tempScore = 1;
     } else {
-      tempScore = 4*pigSides[roll1];
+      tempScore = 4*pigSides[roll1][0];
     }
   } else {
-    tempScore = pigSides[roll1] + pigSides[roll2];
+    tempScore = pigSides[roll1][0] + pigSides[roll2][0];
   }
 
   return tempScore
@@ -44,7 +58,7 @@ $(document).ready(function() {
   $("#intro").hide();
   var playerOne = new Player ("Player One")
   var playerTwo = new Player ("Player Two")
-  var die = new Die(5);
+  var die = new Die();
 
   $(".enter").click(function() {
     $("#welcome").hide();

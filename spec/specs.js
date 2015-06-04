@@ -1,4 +1,4 @@
-var die = new Die(5)
+var die = new Die();
 
 describe('Player', function() {
 
@@ -27,4 +27,22 @@ describe('Die', function() {
   it('can be rolled', function() {
     expect([1,2,3,4,5]).to.include(die.roll());
   });
+
+  it('can have a different weight', function() {
+    var pidDie = new Die([.4, .3, .2, .1]);
+    var rollCount = 1000;
+    var pigCounts = [0,0,0,0]
+    for (var i=1; i <= rollCount; i++) {
+      var roll = pidDie.roll();
+      pigCounts[roll-1]++;
+    }
+    var percentages = pigCounts.map(function(count) { return count/rollCount; })
+    var differences = []
+    for (var j=0; j < 4; j++) {
+      differences.push(Math.abs(pidDie.weights[j] - percentages[j]));
+    }
+    console.log(differences.map(function(difference) { return difference*100; }));
+    expect(Math.max.apply(null, differences)).to.be.at.most(.05);
+
+  })
 });
