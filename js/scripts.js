@@ -1,63 +1,36 @@
 function Player(name, score) {
   this.name = name;
   this.score = 0;
+  this.pigNames = [];
 }
 
 Player.prototype.roll = function() {
-  var pos1 = Math.floor((Math.random() * 5) + 1);
-  var pos2 = Math.floor((Math.random() * 5) + 1);
+  var roll1 = Math.floor((Math.random() * 5) + 1);
+  var roll2 = Math.floor((Math.random() * 5) + 1);
+  var tempScore;
+  var pigSides = {
+    1: 0, // lying on side
+    2: 5, //razorback
+    3: 5, //trotter
+    4: 10, //snouter
+    5: 15, //leaning jowler
+  };
 
-  if (pos1 === pos2) {
-    if (pos1 === 1) {
-      this.score += 1;
-    } else if (pos1 === 2 || 3) {
-      this.score += 20;
-    } else if (pos1 === 4) {
-      this.score += 40;
-    } else if (pos1 === 5) {
-      this.score += 60;
+  if (roll1 === roll2) {
+    if (roll1 === 1) {
+      tempScore = 1;
+    } else {
+      tempScore = 4*pigSides[roll1];
     }
   } else {
-      if (pos1 === 1) {
-        this.score = this.score + 0;
-      } else if (pos1 === 2) {
-        this.score = this.score + 5;
-      } else if (pos1 === 3) {
-        this.score = this.score + 5;
-      } else if (pos1 === 4) {
-        this.score = this.score + 10;
-      } else if (pos1 === 5) {
-        this.score = this.score + 15;
-      } else {
-        alert("fail");
-      }
-
-      if (pos2 === 1) {
-        this.score = this.score + 0;
-      } else if (pos2 === 2) {
-        this.score = this.score + 5;
-      } else if (pos2 === 3) {
-        this.score = this.score + 5;
-      } else if (pos2 === 4) {
-        this.score = this.score + 10;
-      } else if (pos2 === 5) {
-        this.score = this.score + 15;
-      } else {
-        alert("fail");
-      }
-    }
-    return this.score;
+    tempScore = pigSides[roll1] + pigSides[roll2];
   }
 
-Player.prototype.wins = function(otherPlayer) {
-  if (this.score >= 100) {
-    return this;
-  } else if (otherPlayer.score >= 100 ){
-    return otherPlayer;
-  } else {
-    return "roll again"
-  }
+  return [tempScore, roll1, roll2];
+}
 
+Player.prototype.wins = function() {
+  return this.score >= 100;
 }
 
 $(document).ready(function() {
@@ -76,39 +49,39 @@ $(document).ready(function() {
     $("#game").show();
     event.preventDefault();
     $("#welcome").hide();
-    var playerPigs = [];
+    // var playerPigs = [];
     $(':checkbox:checked').each(function(i){
-      playerPigs[i] = $(this).val();
+      if (i < 2) {
+        playerOne.pigNames.push($(this).val());
+        console.log(playerOne.pigNames[i]);
+      } else {
+        playerTwo.pigNames.push($(this).val());
+        console.log(playerTwo.pigNames[i-2  ]);
+      }
+
     });
-    var player1Pigs = []
-    var player2Pigs = []
-    player1Pigs.push(playerPigs[0])
-    player1Pigs.push(playerPigs[1])
-    player2Pigs.push(playerPigs[2])
-    player2Pigs.push(playerPigs[3])
 
   });
 
   $("#roll1").click(function() {
-    playerOne.roll()
+    playerOne.score += playerOne.roll()[0];
     $("#roll1").hide();
     $("#roll2").show();
     $("#score1").text(playerOne.score)
-    if (playerOne.wins(playerTwo) === playerOne) {
+    if (playerOne.wins()) {
       alert("Player One Wins");
     }
   });
 
-    $("#roll2").click(function() {
-      $("#roll2").hide();
-      $("#roll1").show();
-      playerTwo.roll()
-      $("#score2").text(playerTwo.score)
+  $("#roll2").click(function() {
+    $("#roll2").hide();
+    $("#roll1").show();
+    playerTwo.score += playerTwo.roll()[0];
+    $("#score2").text(playerTwo.score)
 
-      if (playerTwo.wins(playerOne) === playerTwo) {
-        alert("Player Two Wins");
-      }
-
+    if (playerTwo.wins()) {
+      alert("Player Two Wins");
+    }
   });
 
 
