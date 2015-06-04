@@ -4,9 +4,15 @@ function Player(name, score) {
   this.pigNames = [];
 }
 
-Player.prototype.roll = function() {
-  var roll1 = Math.floor((Math.random() * 5) + 1);
-  var roll2 = Math.floor((Math.random() * 5) + 1);
+function Die(numSides) {
+  this.numSides = numSides;
+}
+
+Die.prototype.roll = function() {
+  return Math.floor((Math.random() * this.numSides) + 1);
+}
+
+Player.prototype.calculateScore = function(roll1, roll2) {
   var tempScore;
   var pigSides = {
     1: 0, // lying on side
@@ -26,7 +32,7 @@ Player.prototype.roll = function() {
     tempScore = pigSides[roll1] + pigSides[roll2];
   }
 
-  return [tempScore, roll1, roll2];
+  return tempScore
 }
 
 Player.prototype.wins = function() {
@@ -38,6 +44,7 @@ $(document).ready(function() {
   $("#intro").hide();
   var playerOne = new Player ("Player One")
   var playerTwo = new Player ("Player Two")
+  var die = new Die(5);
 
   $(".enter").click(function() {
     $("#welcome").hide();
@@ -53,18 +60,17 @@ $(document).ready(function() {
     $(':checkbox:checked').each(function(i){
       if (i < 2) {
         playerOne.pigNames.push($(this).val());
-        console.log(playerOne.pigNames[i]);
+        // console.log(playerOne.pigNames[i]);
       } else {
         playerTwo.pigNames.push($(this).val());
-        console.log(playerTwo.pigNames[i-2  ]);
+        // console.log(playerTwo.pigNames[i-2]);
       }
-
     });
 
   });
 
   $("#roll1").click(function() {
-    playerOne.score += playerOne.roll()[0];
+    playerOne.score += playerOne.calculateScore(die.roll(), die.roll());
     $("#roll1").hide();
     $("#roll2").show();
     $("#score1").text(playerOne.score)
@@ -76,7 +82,7 @@ $(document).ready(function() {
   $("#roll2").click(function() {
     $("#roll2").hide();
     $("#roll1").show();
-    playerTwo.score += playerTwo.roll()[0];
+    playerTwo.score += playerTwo.calculateScore(die.roll(), die.roll());
     $("#score2").text(playerTwo.score)
 
     if (playerTwo.wins()) {

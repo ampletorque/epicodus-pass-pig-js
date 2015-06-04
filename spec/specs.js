@@ -1,16 +1,10 @@
+var die = new Die(5)
+
 describe('Player', function() {
-
-  it("will return the positions of the pigs after rolled", function() {
-    var testPlayer = new Player ("Margie");
-    var possibilities = [1,2,3,4,5];
-    expect(possibilities).to.include(testPlayer.roll()[1]);
-    expect(possibilities).to.include(testPlayer.roll()[2]);
-  });
-
 
   it("returns score for player", function() {
     var testPlayer = new Player("Margie");
-    testPlayer.score += testPlayer.roll()[0];
+    testPlayer.score += testPlayer.calculateScore(die.roll(), die.roll());
     expect(testPlayer.score).to.be.at.least(1);
     expect(testPlayer.score).to.be.at.most(60);
   });
@@ -20,10 +14,17 @@ describe('Player', function() {
     var testPlayer2 = new Player("Frank");
     var i = 1;
     while ((!testPlayer1.wins()) || (i <= 100)) {
-      testPlayer1.score += testPlayer1.roll()[0];
+      testPlayer1.score += testPlayer1.calculateScore(die.roll(), die.roll());
       i++;
     }
     expect(testPlayer1.wins());
   })
 
+});
+
+
+describe('Die', function() {
+  it('can be rolled', function() {
+    expect([1,2,3,4,5]).to.include(die.roll());
+  });
 });
