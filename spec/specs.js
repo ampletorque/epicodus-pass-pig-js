@@ -3,18 +3,22 @@ var die = new Die();
 describe('Player', function() {
 
   it("returns score for player", function() {
+    var roll1p1 = die.roll();
+    var roll2p1 = die.roll();
     var testPlayer = new Player("Margie");
-    testPlayer.score += testPlayer.calculateScore(die.roll(), die.roll());
+    testPlayer.score += die.calculateScore(roll1p1, roll2p1);
     expect(testPlayer.score).to.be.at.least(1);
     expect(testPlayer.score).to.be.at.most(60);
   });
 
   it("returns the winner when two players roll", function() {
+    var roll1p1 = die.roll();
+    var roll2p1 = die.roll();
     var testPlayer1 = new Player("Margie");
     var testPlayer2 = new Player("Frank");
     var i = 1;
     while ((!testPlayer1.wins()) || (i <= 100)) {
-      testPlayer1.score += testPlayer1.calculateScore(die.roll(), die.roll());
+      testPlayer1.score += die.calculateScore(roll1p1, roll2p1);
       i++;
     }
     expect(testPlayer1.wins());
